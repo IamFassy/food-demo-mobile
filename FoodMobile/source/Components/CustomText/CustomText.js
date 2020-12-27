@@ -26,16 +26,15 @@ export default CustomText;
 const styles = StyleSheet.create({
     commonText: {
         // fontFamily: "Roboto-Regular",
-        fontSize: 16,
+        fontSize: 14,
     },
     headingText: {
         // fontFamily: "Roboto-Medium",
-        fontSize: 20,
-        paddingVertical: 15
+        fontSize: 18,
     },
     subHeadingText: {
         // fontFamily: "Roboto-Medium",
-        fontSize: 18,
+        fontSize: 16,
     }
 
 })
