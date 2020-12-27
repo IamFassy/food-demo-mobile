@@ -1,19 +1,34 @@
 //Library
 import React, { useState } from 'react';
-import { Dimensions, Image, StyleSheet, View } from 'react-native';
+import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { connect } from 'react-redux';
 import { heightPercentageToDP, widthPercentageToDP } from '../../Utils/ResponsiveUI';
 import CountButton from '../CountButton/CountButton';
+import store from '../../ReduxClasses/Store/ConfigureStore';
 //Components
 import CustomText from '../CustomText/CustomText';
+import * as Actions from '../../ReduxClasses/Actions/ProductActions';
+import { addQuantity, addToCart, subtractQuantity } from '../../ReduxClasses/ActionCreators/ProductActionCreator';
+import Colors from '../../Utils/Colors';
 
-const { width, height } = Dimensions.get("window");
 
-const ProductComponent = ({ item }) => {
-    const [count, setCount] = useState(0)
 
-    const addClicked = () => {
-        setCount(count + 1)
+const ProductComponent = ({ item, dispatch, product, index, items }) => {
+
+    const addClicked = (id,index) => {
+        dispatch(addToCart(id,index))
     }
+
+    const handleAddQuantity = (id) => {
+        dispatch(addQuantity(id));
+    }
+
+    const handleRemoveQuantity = (id) => {
+        dispatch(subtractQuantity(id));
+    }
+
+
+    console.log(product, "redux");
     return (
         <View style={styles.productView}>
 
@@ -21,7 +36,11 @@ const ProductComponent = ({ item }) => {
                 <View style={styles.imageView}>
                     <Image
                         source={{ uri: item.img }}
-                        style={styles.image} />
+                        style={[styles.image, { opacity: item.inStock ? 1 : 0.5 }]} />
+                    {!item.inStock &&
+                        <View style={styles.outOfStockView}>
+                            <CustomText style={styles.stockText}>OUT OF STOCK</CustomText>
+                        </View>}
                 </View>
                 <View style={styles.detailsView}>
                     <View style={{ flex: 0.25 }}>
@@ -41,8 +60,19 @@ const ProductComponent = ({ item }) => {
                             </CustomText>
                         </View>
                         <View style={styles.buttonView}>
-                            <CountButton count={count} onPress={() => addClicked()} />
+                            {item.inStock === true && <CountButton
+                                id={item.itemId}
+                                index={index}
+                                onPress={() => addClicked(item.itemId)}
+                                handleAddQuantity={() => handleAddQuantity(item.itemId)}
+                                handleRemoveQuantity={() => handleRemoveQuantity(item.itemId)} />}
+                            {item.inStock === false &&
+                                <TouchableOpacity>
+                                    <CustomText type="bold" style={styles.notifyText}>Notify Me</CustomText>
+                                </TouchableOpacity>
+                            }
                         </View>
+
                     </View>
                 </View>
             </View>
@@ -50,11 +80,18 @@ const ProductComponent = ({ item }) => {
     )
 }
 
-export default ProductComponent;
+const mapStateToProps = state => {
+    return {
+        product: state.product,
+        items: state.product.items
+    }
+}
+
+
+export default connect(mapStateToProps)(ProductComponent);
 
 const styles = StyleSheet.create({
     productView: {
-        // paddingHorizontal: 15
         marginTop: 15,
     },
     productSubView: {
@@ -63,6 +100,7 @@ const styles = StyleSheet.create({
     },
     imageView: {
         flex: 0.23,
+        display: "flex"
     },
     image: {
         borderRadius: 10,
@@ -79,5 +117,26 @@ const styles = StyleSheet.create({
     buttonView: {
         flex: 0.45,
         alignSelf: "flex-end"
+    },
+    notifyText: {
+        color: Colors.primary,
+        textAlign: "right"
+    },
+    outOfStockView: {
+        position: "absolute",
+        zIndex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: Colors.white,
+        alignSelf: "center",
+        height: widthPercentageToDP(8),
+        top: widthPercentageToDP(7),
+        left: widthPercentageToDP(5),
+        width: widthPercentageToDP(12)
+    },
+    stockText: {
+        color: Colors.primary,
+        fontSize: 10,
+        textAlign: "center"
     }
 })

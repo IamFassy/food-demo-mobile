@@ -7,18 +7,32 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
 //Utils
 import { heightPercentageToDP, widthPercentageToDP } from '../../Utils/ResponsiveUI';
+import { connect } from 'react-redux';
+import CustomText from '../CustomText/CustomText';
 
-const TopBar = () => {
+const TopBar = (props) => {
     return (
         <View style={styles.topBarView}>
             <View style={styles.cartView}>
                 <FontAwesomeIcon size={24} icon="shopping-cart" />
+                {props.count > 0 &&
+                    <View style={styles.countView}>
+                        <CustomText style={styles.countText} type="bold">
+                            {props.count}
+                        </CustomText>
+                    </View>}
             </View>
         </View>
     )
 }
 
-export default TopBar;
+const mapStateToProps = state => {
+    return {
+        count: state.product.count
+    }
+}
+
+export default connect(mapStateToProps)(TopBar);
 
 const styles = StyleSheet.create({
     topBarView: {
@@ -33,6 +47,23 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20
     },
     cartView: {
-        alignSelf: "flex-end"
+        alignSelf: "flex-end",
+    },
+    countView: {
+        backgroundColor: Colors.primary,
+        position: "absolute",
+        borderRadius: 10,
+        left: 15,
+        bottom: 10,
+        width: 20,
+        height: 15,
+        zIndex: 1,
+        alignItems: "center",
+        justifyContent: "center"
+    },
+    countText: {
+        color: Colors.white,
+        fontSize: 12
     }
+
 })

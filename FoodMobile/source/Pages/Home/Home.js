@@ -1,6 +1,7 @@
 //Library
 import React, { Component } from 'react';
 import { ActivityIndicator, Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { connect } from 'react-redux';
 import { getCategories, httpMethods } from '../../ApiManager/Environment';
 import NetworkManager from '../../ApiManager/NetworkManager';
 
@@ -8,6 +9,7 @@ import NetworkManager from '../../ApiManager/NetworkManager';
 import CustomText from '../../Components/CustomText/CustomText';
 import ProductComponent from '../../Components/ProductComponent/ProductComponent';
 import TopBar from '../../Components/TopBar/TopBar';
+import { getProducts } from '../../ReduxClasses/ActionCreators/ProductActionCreator';
 import Colors from '../../Utils/Colors';
 
 const { width, height } = Dimensions.get("window")
@@ -31,6 +33,8 @@ class Home extends Component {
                 console.log(res);
                 this.setState({ loading: false })
                 if (res.status === 200) {
+                    const { dispatch } = this.props
+                    dispatch(getProducts(res.data[0].items))
                     this.setState({ success: true, products: res.data.length > 0 ? res.data : [], serverError: false, error: false })
                 }
                 else if (res.status === 500) {
@@ -46,7 +50,7 @@ class Home extends Component {
     }
 
     render() {
-        console.log(this.state.products);
+
         return (
             <SafeAreaView style={styles.container}>
                 <View style={styles.container}>
@@ -95,7 +99,7 @@ class Home extends Component {
                                             </CustomText>
                                             <View>
                                                 {this.state.products[0].items !== undefined && this.state.products[0].items.map((item, index) => {
-                                                    return <ProductComponent item={item} key={index} />
+                                                    return <ProductComponent item={item} key={index} index={index} />
                                                 })}
 
                                             </View>
@@ -111,7 +115,14 @@ class Home extends Component {
     }
 }
 
-export default Home;
+
+const mapStateToProps = state => {
+    return {
+        product: state.product
+    }
+}
+
+export default connect(mapStateToProps)(Home);
 
 
 const styles = StyleSheet.create({

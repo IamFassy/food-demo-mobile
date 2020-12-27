@@ -1,29 +1,37 @@
 //Library
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 //Utils
 import Colors from '../../Utils/Colors';
 import CustomText from '../CustomText/CustomText';
+import { connect } from 'react-redux';
+import { heightPercentageToDP } from '../../Utils/ResponsiveUI';
 
 
-const CountButton = ({ onPress, count }) => {
+const CountButton = ({ onPress, count, handleAddQuantity, handleRemoveQuantity, items, id, index }) => {
+    const [item, setItem] = useState({})
+    useEffect(() => {
+        let item = items[index]
+        setItem(item)
+    }, [])
+
     return (
         <View style={styles.countButtonView}>
-            {count === 0 && <TouchableOpacity onPress={onPress}>
+            {(item.addedQuantity === 0 || item.addedQuantity === undefined) && <TouchableOpacity onPress={onPress}>
                 <Text style={styles.addText}>
                     ADD
                 </Text>
             </TouchableOpacity>}
-            {count > 0 &&
+            {item.addedQuantity > 0 &&
                 <View style={styles.activeView}>
-                    <TouchableOpacity onPress={onPress}>
+                    <TouchableOpacity onPress={handleRemoveQuantity}>
                         <FontAwesomeIcon icon="minus" color={Colors.primary} />
                     </TouchableOpacity>
                     <CustomText type="bold" style={styles.countText}>
-                        {count}
+                        {item.addedQuantity}
                     </CustomText>
-                    <TouchableOpacity onPress={onPress}>
+                    <TouchableOpacity onPress={handleAddQuantity}>
                         <FontAwesomeIcon icon="plus" color={Colors.primary} />
                     </TouchableOpacity>
                 </View>}
@@ -32,7 +40,14 @@ const CountButton = ({ onPress, count }) => {
     )
 }
 
-export default CountButton;
+const mapStateToProps = state => {
+    return {
+        count: state.product.count,
+        items: state.product.items
+    };
+}
+
+export default connect(mapStateToProps)(CountButton);
 
 const styles = StyleSheet.create({
     countButtonView: {
@@ -40,14 +55,16 @@ const styles = StyleSheet.create({
         borderColor: Colors.primary,
         width: "100%",
         borderRadius: 5,
-        paddingVertical: 5
+        paddingVertical: 5,
+        height: heightPercentageToDP(5)
     },
     addText: {
         color: Colors.primary,
         fontWeight: "bold",
         fontSize: 16,
         fontFamily: "Roboto-Regular",
-        textAlign: "center"
+        textAlign: "center",
+        textAlignVertical: "center"
     },
     activeView: {
         display: "flex",
