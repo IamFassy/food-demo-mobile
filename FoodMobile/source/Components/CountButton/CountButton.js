@@ -17,7 +17,7 @@ const CountButton = ({ onPress, count, handleAddQuantity, handleRemoveQuantity, 
     console.log(item, addedItems, "here");
     return (
         <View style={styles.countButtonView}>
-            {(item === undefined || item.addedQuantity === 0) && <TouchableOpacity onPress={onPress}>
+            {(item === undefined || item.addedQuantity === 0 || addedItems.length === 0) && <TouchableOpacity onPress={onPress}>
                 <Text style={styles.addText}>
                     ADD
                 </Text>
