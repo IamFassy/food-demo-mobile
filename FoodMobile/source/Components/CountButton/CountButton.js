@@ -6,24 +6,23 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import Colors from '../../Utils/Colors';
 import CustomText from '../CustomText/CustomText';
 import { connect } from 'react-redux';
-import { heightPercentageToDP } from '../../Utils/ResponsiveUI';
 
-
-const CountButton = ({ onPress, count, handleAddQuantity, handleRemoveQuantity, items, id, index }) => {
+const CountButton = ({ onPress, count, handleAddQuantity, handleRemoveQuantity, items, id, index, addedItems }) => {
     const [item, setItem] = useState({})
     useEffect(() => {
-        let item = items[index]
+        let item = addedItems.find((item) => { return item.itemId === id })
         setItem(item)
-    }, [])
+    }, [addedItems])
 
+    console.log(item, addedItems, "here");
     return (
         <View style={styles.countButtonView}>
-            {(item.addedQuantity === 0 || item.addedQuantity === undefined) && <TouchableOpacity onPress={onPress}>
+            {(item === undefined || item.addedQuantity === 0) && <TouchableOpacity onPress={onPress}>
                 <Text style={styles.addText}>
                     ADD
                 </Text>
             </TouchableOpacity>}
-            {item.addedQuantity > 0 &&
+            {item?.addedQuantity > 0 &&
                 <View style={styles.activeView}>
                     <TouchableOpacity onPress={handleRemoveQuantity}>
                         <FontAwesomeIcon icon="minus" color={Colors.primary} />
@@ -43,7 +42,8 @@ const CountButton = ({ onPress, count, handleAddQuantity, handleRemoveQuantity, 
 const mapStateToProps = state => {
     return {
         count: state.product.count,
-        items: state.product.items
+        items: state.product.items,
+        addedItems: state.product.addedItems
     };
 }
 
@@ -56,7 +56,6 @@ const styles = StyleSheet.create({
         width: "100%",
         borderRadius: 5,
         paddingVertical: 5,
-        height: heightPercentageToDP(5)
     },
     addText: {
         color: Colors.primary,
@@ -73,6 +72,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-around"
     },
     countText: {
-        color: Colors.lightText
+        color: Colors.lightText,
+        fontSize: 16
     }
 })

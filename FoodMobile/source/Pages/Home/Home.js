@@ -50,6 +50,7 @@ class Home extends Component {
     }
 
     render() {
+        console.log(this.props.product, "redux");
 
         return (
             <SafeAreaView style={styles.container}>

@@ -7,7 +7,6 @@ import CountButton from '../CountButton/CountButton';
 import store from '../../ReduxClasses/Store/ConfigureStore';
 //Components
 import CustomText from '../CustomText/CustomText';
-import * as Actions from '../../ReduxClasses/Actions/ProductActions';
 import { addQuantity, addToCart, subtractQuantity } from '../../ReduxClasses/ActionCreators/ProductActionCreator';
 import Colors from '../../Utils/Colors';
 
@@ -15,8 +14,8 @@ import Colors from '../../Utils/Colors';
 
 const ProductComponent = ({ item, dispatch, product, index, items }) => {
 
-    const addClicked = (id,index) => {
-        dispatch(addToCart(id,index))
+    const addClicked = (id) => {
+        dispatch(addToCart(id));
     }
 
     const handleAddQuantity = (id) => {
@@ -27,8 +26,6 @@ const ProductComponent = ({ item, dispatch, product, index, items }) => {
         dispatch(subtractQuantity(id));
     }
 
-
-    console.log(product, "redux");
     return (
         <View style={styles.productView}>
 

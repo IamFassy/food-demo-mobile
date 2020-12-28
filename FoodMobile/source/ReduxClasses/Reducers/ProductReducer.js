@@ -17,45 +17,39 @@ export default function productReducer(state = INITIAL_STATE, action) {
             }
         }
         case Action.ADD_TO_CART: {
-            let addedItem = state.items.find(item => item.itemId === action.id)
+            console.log("here");
+            console.log(state.items, "state items");
+            let addedItem = [...state.items]
+            console.log(state.items, "state items");
+            let item = addedItem.find(item => item.itemId === action.id)
             //Checking if it already exists
             let item_exist = state.addedItems.find(item => id === item.itemId)
+            console.log(state.items, "state items");
+            console.log(addedItem, "addedItem");
             if (item_exist) {
-                addedItem.addedQuantity += 1
 
+                item.addedQuantity += 1
+                console.log(item, "item");
                 return {
                     ...state,
-                    total: state.total + addedItem.price,
+                    total: state.total + item.price,
                     count: state.count += 1
                 }
             }
             else {
-                addedItem.addedQuantity = 1;
-                // console.log(addedItem);
+                console.log("else");
+                item.addedQuantity = 1;
                 //calculating the total
-                let newTotal = state.total + addedItem.price;
+                let newTotal = state.total + item.price;
+                console.log(state.items, "item state else");
                 return {
                     ...state,
-                    addedItems: [...state.addedItems, addedItem],
+                    addedItems: [...state.addedItems, item],
                     total: newTotal,
                     count: state.count += 1
                 };
             }
 
-        }
-        case Action.REMOVE_FROM_CART: {
-            let itemToRemove = state.addedItems.find(item => action.id === item.itemId)
-            let new_items = state.addedItems.filter(item => action.id !== item.itemId)
-
-            //calculating the total
-            let newTotal = state.total - (itemToRemove.price * itemToRemove.quantity)
-            console.log(itemToRemove)
-            return {
-                ...state,
-                addedItems: new_items,
-                total: newTotal,
-                count: 0
-            }
         }
         case Action.ADD_QUANTITY: {
             let addedItem = state.items.find(item => item.itemId === action.id)
@@ -69,9 +63,11 @@ export default function productReducer(state = INITIAL_STATE, action) {
             }
         }
         case Action.SUBTRACT_QUANTITY: {
+
             let addedItem = state.items.find(item => item.itemId === action.id)
             //if the quantity == 0 then it should be removed
-            if (addedItem.quantity === 1) {
+            if (addedItem.addedQuantity === 1) {
+                addedItem.addedQuantity = 0
                 let new_items = state.addedItems.filter(item => item.itemId !== action.id)
                 let newTotal = state.total - addedItem.price
                 return {
